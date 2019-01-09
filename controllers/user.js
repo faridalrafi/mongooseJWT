@@ -6,100 +6,95 @@ var userSchema = require('../scheme/user');
 
 // var validate = ajv.compile(userSchema);
 
-
 exports.test = function (req, res) {
   res.send('Greetings from the Test controller!');
 };
 
-exports.user_all = function (req,res) {
-  User.find({}).then (doc =>{
-      res.send({
-          data: doc,
-          status: 'Ok',
-      })
-  }).catch(err =>{
-      console.error(err)
+exports.user_all = function (req, res) {
+  User.find({}).then(doc => {
+    res.send({
+      data: doc,
+      status: 'Ok'
+    })
+  }).catch(err => {
+    console.error(err)
   })
-
 }
 
-exports.user_create = function (req, res,next) {
-  
+exports.user_create = function (req, res, next) {
   let user = new User(
     {
-        name: req.body.name,
-        username: req.body.username,
-        email: req.body.email,
-        password: req.body.password
+      name: req.body.name,
+      username: req.body.username,
+      email: req.body.email,
+      password: req.body.password
     });
-    var ajv = new Ajv(); 
-    // var valid = ajv.validate(userSchema, user);
-    var validate = ajv.compile(userSchema);
-    var valid = validate(user);
+  var ajv = new Ajv();
+  // var valid = ajv.validate(userSchema, user);
+  var validate = ajv.compile(userSchema);
+  var valid = validate(user);
 
-    if (valid) {
-      console.log('User data is valid!');
-      bcrypt.hash(user.password, saltRounds).then(function(hash) {
-        // Store hash in your password DB.
-        user.password = hash
-        user.save(function (err) {
-            if (err) {
-                return next (err);
-            }
-            res.send('User Created')
-        })
+  if (valid) {
+    console.log('User data is valid!');
+    bcrypt.hash(user.password, saltRounds).then(function (hash) {
+      // Store hash in your password DB.
+      user.password = hash
+      user.save(function (err) {
+        if (err) {
+          return next(err);
+        }
+        res.send('User Created')
+      })
     });
-    } else {
-      console.log('User data is INVALID!', validate.errors);
-      res.status(400)
-      res.send({message: "DATA INVALID", error: validate.errors})
-    }
-  
+  } else {
+    console.log('User data is INVALID!', validate.errors);
+    res.status(400)
+    res.send({ message: 'DATA INVALID', error: validate.errors })
+  }
 }
 
 exports.user_details = function (req, res) {
   User.findById(req.params.id, function (err, user) {
-      if (err) return next(err);
-      res.send(user);
+    if (err) return next(err);
+    res.send(user);
   })
 };
 
 exports.user_update = function (req, res) {
-  Product.findByIdAndUpdate(req.params.id, {$set: req.body}, function (err, user) {
-      if (err) return next(err);
-      res.send('User updated.');
+  User.findByIdAndUpdate(req.params.id, { $set: req.body }, function (err, user) {
+    if (err) return next(err);
+    res.send('User updated.');
   });
 };
 
 exports.user_delete = function (req, res) {
   User.findByIdAndRemove(req.params.id, function (err) {
-      if (err) return next(err);
-      res.send('User Deleted successfully!');
+    if (err) return next(err);
+    res.send('User Deleted successfully!');
   })
 };
 
 exports.authentication = (req, res) => {
-  let user = User.findOne( {
+  let user = User.findOne({
     username: req.body.username
-  }, function(err,obj) { 
-    if (!err){
+  }, function (err, obj) {
+    if (!err) {
       return obj
-    }else{
+    } else {
       console.log(err)
     }
-   });
-
-  user.then( (user) => {
-    bcrypt.compare(req.body.password, user.password).then(function(result) {
-      // res == true
-      if (result){
-        res.send("OKE")
-        // Taro JWT disini atau login untuk pasport juga boleh
-      }else{
-        res.status(401)
-        res.send({Message : "Password salah"})
-      }
   });
-  })
 
+  user.then((user) => {
+    bcrypt.compare(req.body.password, user.password).then(function (result) {
+      // res == true
+      if (result) {
+        res.send('OKE')
+        // Taro JWT disini atau login untuk pasport juga boleh
+      } else {
+        res.status(401)
+        res.send({ Message: 'Password salah' })
+      }
+    });
+  })
 }
