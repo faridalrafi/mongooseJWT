@@ -1,6 +1,11 @@
 const User = require('../models/user')
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const Ajv = require('ajv');
+var userSchema = require('../scheme/user');
+
+// var validate = ajv.compile(userSchema);
+
 
 exports.test = function (req, res) {
   res.send('Greetings from the Test controller!');
@@ -19,26 +24,37 @@ exports.user_all = function (req,res) {
 }
 
 exports.user_create = function (req, res,next) {
-  let raw_password = req.body.password
-  bcrypt.hash(raw_password, saltRounds).then(function(hash) {
-    // Store hash in your password DB.
-
+  
   let user = new User(
     {
         name: req.body.name,
         username: req.body.username,
         email: req.body.email,
-        password: hash
+        password: req.body.password
     });
+    var ajv = new Ajv(); 
+    // var valid = ajv.validate(userSchema, user);
+    var validate = ajv.compile(userSchema);
+    var valid = validate(user);
+
+    if (valid) {
+      console.log('User data is valid!');
+      bcrypt.hash(user.password, saltRounds).then(function(hash) {
+        // Store hash in your password DB.
+        user.password = hash
+        user.save(function (err) {
+            if (err) {
+                return next (err);
+            }
+            res.send('User Created')
+        })
+    });
+    } else {
+      console.log('User data is INVALID!', validate.errors);
+      res.status(400)
+      res.send({message: "DATA INVALID", error: validate.errors})
+    }
   
-  
-    user.save(function (err) {
-        if (err) {
-            return next (err);
-        }
-        res.send('User Created')
-    })
-});
 }
 
 exports.user_details = function (req, res) {
