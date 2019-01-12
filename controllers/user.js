@@ -3,11 +3,13 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const Ajv = require('ajv');
 var userSchema = require('../scheme/user');
+var jwt = require('jsonwebtoken');
 
 // var validate = ajv.compile(userSchema);
 
-exports.test = function (req, res) {
-  res.send('Greetings from the Test controller!');
+exports.test = function (req, res, next) {
+  // token = req.headers.authorization;
+  res.json({ message: req.decoded });
 };
 
 exports.user_all = function (req, res) {
@@ -89,8 +91,13 @@ exports.authentication = (req, res) => {
     bcrypt.compare(req.body.password, user.password).then(function (result) {
       // res == true
       if (result) {
-        res.send('OKE')
+        // res.send('OKE')
         // Taro JWT disini atau login untuk pasport juga boleh
+        var token = jwt.sign(user.toJSON(), 'jwtsecret', { // melakukan generate token di jwt
+          algorithm: 'HS256'
+        });
+
+        res.json({ message: 'berhasil login', token: token });
       } else {
         res.status(401)
         res.send({ Message: 'Password salah' })
