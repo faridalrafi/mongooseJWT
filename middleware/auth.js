@@ -1,4 +1,3 @@
-var express = require('express');
 var jwt = require('jsonwebtoken');
 
 exports.isAuthenticated = function (req, res, next) {
