@@ -4,15 +4,16 @@ const saltRounds = 10;
 const Ajv = require('ajv');
 var userSchema = require('../scheme/user');
 var jwt = require('jsonwebtoken');
+require('dotenv').config() // membaca file env
 
 // var validate = ajv.compile(userSchema);
 
-exports.test = function (req, res, next) {
+exports.Test = function (req, res, next) {
   // token = req.headers.authorization;
   res.json({ message: req.decoded });
 };
 
-exports.user_all = function (req, res) {
+exports.UserAll = function (req, res) {
   User.find({}).then(doc => {
     res.send({
       data: doc,
@@ -23,7 +24,7 @@ exports.user_all = function (req, res) {
   })
 }
 
-exports.user_create = function (req, res, next) {
+exports.UserCreate = function (req, res, next) {
   let user = new User(
     {
       name: req.body.name,
@@ -55,21 +56,21 @@ exports.user_create = function (req, res, next) {
   }
 }
 
-exports.user_details = function (req, res, next) {
+exports.UserDetail = function (req, res, next) {
   User.findById(req.params.id, function (err, user) {
     if (err) return next(err);
     res.send(user);
   })
 };
 
-exports.user_update = function (req, res, next) {
+exports.UserUpdate = function (req, res, next) {
   User.findByIdAndUpdate(req.params.id, { $set: req.body }, function (err, user) {
     if (err) return next(err);
     res.send('User updated.');
   });
 };
 
-exports.user_delete = function (req, res, next) {
+exports.UserDelete = function (req, res, next) {
   User.findByIdAndRemove(req.params.id, function (err) {
     if (err) return next(err);
     res.send('User Deleted successfully!');
@@ -88,6 +89,8 @@ exports.authentication = (req, res) => {
   });
 
   user.then((user) => {
+    console.log(user)
+    console.log(req.body)
     bcrypt.compare(req.body.password, user.password).then(function (result) {
       // res == true
       if (result) {
@@ -102,6 +105,6 @@ exports.authentication = (req, res) => {
         res.status(401)
         res.send({ Message: 'Password salah' })
       }
-    });
+    }).catch((err)=> { console.log(err)})
   })
 }
