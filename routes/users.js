@@ -12,8 +12,6 @@ router.get('/all', userController.UserAll)
 router.get('/allPromise', userController.UserAllPromise)
 router.put('/:id/update', userController.UserUpdate)
 router.delete('/:id/delete', userController.UserDelete)
-router.post('/login', userController.authentication)
 router.get('/detail/:id', userController.UserDetail);
-router.post('/forgot', userController.forgetPassword)
-router.post('/reset/:token', userController.reset)
+
 module.exports = router;
