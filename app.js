@@ -7,7 +7,7 @@ const logger = require('morgan');
 const mongoose = require('mongoose');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
-
+var cors = require('cors')
 const app = express();
 require('dotenv').config() // membaca file env
 const devDbUrl = 'mongodb://localhost/productstutorial';
@@ -20,6 +20,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+app.use(cors())
 
 app.use(logger('dev'));
 app.use(express.json());
