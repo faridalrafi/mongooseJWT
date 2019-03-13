@@ -9,7 +9,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
 const app = express();
-
+require('dotenv').config() // membaca file env
 const devDbUrl = 'mongodb://localhost/productstutorial';
 const mongoDB = process.env.MONGODB_URI || devDbUrl;
 mongoose.connect(mongoDB);
