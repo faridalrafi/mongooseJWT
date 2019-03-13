@@ -11,17 +11,20 @@ simple crud API
 ### Dependencies
 
 * cors
-* ex. Windows 10
+* mongoose
+* bcrypt
+* nodemailer (using mailgun)
+* jsonwebtoken
 
 ### Installing
 
-* How/where to download your program
-* Any modifications needed to be made to files/folders
+* npm install
+* Create your new env
 
 ### Executing program
 
 * How to run the program
-* Step-by-step bullets
+
 ```
-code blocks for commands
+npm start
 ```
